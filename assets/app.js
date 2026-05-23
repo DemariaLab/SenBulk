@@ -517,18 +517,24 @@ function initialiseSearch() {
     })
   ];
 
-  window.addEventListener("resize", () => {
-    state.searchBoxes.forEach((box) => {
-      if (!box.suggestionsCard.classList.contains("is-hidden")) {
-        updateSuggestionsPosition(box);
-        updateSuggestionsMaxHeight(box);
-      }
-    });
-  });
+  window.addEventListener("resize", refreshVisibleSuggestions);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener("resize", refreshVisibleSuggestions);
+    window.visualViewport.addEventListener("scroll", refreshVisibleSuggestions);
+  }
 
   window.setTimeout(() => {
     state.searchBoxes[0].input.focus();
   }, 50);
+}
+
+function refreshVisibleSuggestions() {
+  state.searchBoxes.forEach((box) => {
+    if (!box.suggestionsCard.classList.contains("is-hidden")) {
+      updateSuggestionsPosition(box);
+      updateSuggestionsMaxHeight(box);
+    }
+  });
 }
 
 function mountSharedSearch(view) {
@@ -781,9 +787,12 @@ function updateSuggestionsPosition(box) {
 
 function updateSuggestionsMaxHeight(box) {
   const formRect = box.form.getBoundingClientRect();
-  const viewportHeight = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  const visualViewport = window.visualViewport;
+  const viewportHeight = visualViewport ? visualViewport.height : window.innerHeight;
+  const viewportOffsetTop = visualViewport ? visualViewport.offsetTop : 0;
   const viewportBottomGap = 16;
-  const availableHeight = Math.max(0, Math.floor(viewportHeight - formRect.bottom - viewportBottomGap));
+  const formBottomInViewport = formRect.bottom - viewportOffsetTop;
+  const availableHeight = Math.max(0, Math.floor(viewportHeight - formBottomInViewport - viewportBottomGap));
   const dashboardCap = Math.floor(viewportHeight * 0.5);
   const maxHeight = state.currentView === "dashboard" ? Math.min(availableHeight, dashboardCap) : availableHeight;
   box.suggestionsList.style.maxHeight = `${maxHeight}px`;

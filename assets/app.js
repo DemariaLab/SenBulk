@@ -1257,12 +1257,19 @@ function updateDirectionSummary(rows) {
   const upPercent = directionalTotal ? (upCount / directionalTotal) * 100 : 0;
   const downPercent = directionalTotal ? (downCount / directionalTotal) * 100 : 0;
 
-  elements.directionUpCount.textContent = `Up ${upCount}`;
-  elements.directionDownCount.textContent = `Down ${downCount}`;
+  setDirectionCount(elements.directionUpCount, "Up", upCount);
+  setDirectionCount(elements.directionDownCount, "Down", downCount);
   elements.directionUpBar.style.width = `${upPercent}%`;
   elements.directionDownBar.style.width = `${downPercent}%`;
   elements.directionUpLabel.textContent = `${Math.round(upPercent)}%`;
   elements.directionDownLabel.textContent = `${Math.round(downPercent)}%`;
+}
+
+function setDirectionCount(element, label, count) {
+  const countDigits = document.createElement("span");
+  countDigits.className = "stat-count-digits";
+  countDigits.textContent = String(count);
+  element.replaceChildren(`${label} `, countDigits);
 }
 
 function resetSummary() {
@@ -1270,8 +1277,8 @@ function resetSummary() {
   elements.statComparisons.textContent = "-";
   elements.statSignificant.textContent = "-";
   elements.statMedian.textContent = "-";
-  elements.directionUpCount.textContent = "Up 0";
-  elements.directionDownCount.textContent = "Down 0";
+  setDirectionCount(elements.directionUpCount, "Up", 0);
+  setDirectionCount(elements.directionDownCount, "Down", 0);
   elements.directionUpBar.style.width = "0";
   elements.directionDownBar.style.width = "0";
   elements.directionUpLabel.textContent = "0%";

@@ -858,6 +858,15 @@ body[data-theme="dark"] .eyebrow {
   letter-spacing: -0.03em;
 }
 
+.stat-count-digits {
+  display: inline-block;
+  min-width: 3ch;
+  text-align: right;
+  letter-spacing: 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-variant-numeric: tabular-nums;
+}
+
 .plot-card {
   min-height: 100%;
 }

@@ -1,0 +1,108 @@
+study,comparison,log2fc,lfcSE,padj,sample_type,origin,genotype,organism,simple_label
+GSE53356,Senescent1_vs_Control1,-1.769,2.126,N.S.,human IMR90 cell line,in vitro,wildtype,human,Fibroblasts
+GSE117208,Senescent1_vs_Control1,0.957,0.917,N.S.,mouse embryonic fibroblasts (MEFs),in vitro,wildtype C57BL/6,mouse,Fibroblasts
+GSE117979,Senescent1_vs_Control1,-0.392,0.531,N.S.,mouse embryonic fibroblasts,in vitro,wildtype C57BL/6,mouse,Fibroblasts
+GSE117979,Senescent2_vs_Control2,1.324,0.513,p=0.02198,c2 mouse embryonic fibroblasts; c2 mouse embryonic fibroblata; s2 mouse embryonic fibroblasts,in vitro,wildtype C57BL/6,mouse,Fibroblasts
+GSE117979,Senescent3_vs_Control3,-0.089,0.535,N.S.,mouse embryonic fibroblasts,in vitro,wildtype C57BL/6,mouse,Fibroblasts
+GSE139575,Senescent1_vs_Control1,-0.396,0.205,N.S.,mouse embryonic fibroblasts (MEF),in vitro,c1 wildtype C57BL/6; s1 genetically edited (overexpression of p21),mouse,Fibroblasts
+GSE139575,Senescent2_vs_Control1,-0.26,0.204,N.S.,mouse embryonic fibroblasts (MEF),in vitro,genetically edited (overexpression of p16),mouse,Fibroblasts
+GSE169489,Senescent2_vs_Control1,5.048,0.429,p<0.00001,MEF14_Dox+_Day8,in vitro,wildtype,mouse,Fibroblasts
+GSE176107,Senescent1_vs_Control1,1.925,0.121,p<0.00001,mouse tail fibroblast,in vitro,wildtype C57BL/6,mouse,Fibroblasts
+GSE182731,Senescent2_vs_Control2,0.894,0.362,p=0.04488,primary mouse lung fibroblasts,in vitro,wildtype C57BL/6,mouse,Fibroblasts
+GSE182731,Senescent3_vs_Control3,-0.614,0.458,N.S.,primary mouse lung fibroblasts,in vitro,wildtype C57BL/6,mouse,Fibroblasts
+GSE202032,Senescent1_vs_Control1,0.165,0.173,N.S.,mouse embryonic fibroblasts,in vitro,wildtype,mouse,Fibroblasts
+GSE210362,Senescent1_vs_Control1,-0.651,0.379,N.S.,murine embryonic fibroblasts,in vitro,c1 wildtype; s1 genetically edited (Myc knockout),mouse,Fibroblasts
+GSE218683,Senescent1_vs_Control1,0.766,0.484,N.S.,mouse embryonic fibroblasts,in vitro,wildtype,mouse,Fibroblasts
+GSE218683,Senescent2_vs_Control2,0.075,0.45,N.S.,mouse embryonic fibroblasts,in vitro,wildtype,mouse,Fibroblasts
+GSE218684,Senescent1_vs_Control1,-1.303,0.734,N.S.,mouse embryonic fibroblast,in vitro,wildtype,mouse,Fibroblasts
+GSE218684,Senescent2_vs_Control2,-1.024,0.695,N.S.,mouse embryonic fibroblast,in vitro,wildtype,mouse,Fibroblasts
+GSE219126,Senescent1_vs_Control1,1.114,0.267,p=0.00053,mouse intestinal organoids,in vitro,wildtype C57BL/6,mouse,Other
+GSE229010,Senescent1_vs_Control1,0.23,0.184,N.S.,primary mouse adult fibroblast,in vitro,wildtype,mouse,Fibroblasts
+GSE233718,Senescent1_vs_Control1,-1.682,0.339,p=0.00001,mouse proximal tubular epithelial cells,in vitro,wildtype C57BL/6Rj,mouse,Epithelial
+GSE247975,Senescent1_vs_Control1,-0.241,0.146,N.S.,mouse fibro-adipogenic progenitors,in vitro,wildtype C57BL/6,mouse,Stromal
+GSE278372,Senescent1_vs_Control1,-0.332,0.523,N.S.,primary mouse embryonic fibroblasts,in vitro,wildtype,mouse,Fibroblasts
+GSE278372,Senescent2_vs_Control2,0.45,0.45,N.S.,primary mouse embryonic fibroblasts,in vitro,wildtype,mouse,Fibroblasts
+GSE279349,Senescent1_vs_Control1,0.167,0.373,N.S.,primary mouse embryonic fibroblasts,in vitro,wildtype,mouse,Fibroblasts
+GSE279349,Senescent2_vs_Control1,0.089,0.376,N.S.,primary mouse embryonic fibroblasts,in vitro,wildtype,mouse,Fibroblasts
+GSE281894,Senescent1_vs_Control1,0.426,0.386,N.S.,podocytes,in vitro,wildtype,mouse,Renal
+GSE160279,mouse_Senescent2_vs_Control2,0.902,0.69,N.S.,mouse embryonic fibroblasts,in vitro,wildtype,mouse,Fibroblasts
+GSE179880,Senescent1_vs_Control1,-0.942,0.313,p=0.00739,mouse skin fibroblasts,in vitro,wildtype,mouse,Fibroblasts
+GSE201217,Senescent1_vs_Control1,0.765,0.583,N.S.,primary PWK mouse cells,in vitro,wildtype,mouse,Other
+GSE108278,Senescent1_vs_Control1,3.976,1.63,p=0.02966,IMR90 hTERT lung fibroblast,in vitro,wildtype,human,Fibroblasts
+GSE109700,Senescent1_vs_Control1,5.172,0.882,p<0.00001,human lung fibroblast cells,in vitro,wildtype,human,Fibroblasts
+GSE125632,Senescent1_vs_Control1,1.814,0.977,N.S.,human bone marrow mesenchymal stromal cells,in vitro,wildtype,human,Stromal
+GSE128420,Senescent1_vs_Control1,6.187,1.438,p=0.00004,primary normal human prostate stromal cells,in vitro,wildtype,human,Stromal
+GSE130306,Senescent1_vs_Control1,0,1.687,N.S.,human WI-38 fibroblasts,in vitro,wildtype,human,Fibroblasts
+GSE132204,Senescent1_vs_Control1,0.776,0.351,N.S.,primary human corneal endothelial cells,in vitro,wildtype,human,Endothelial
+GSE132204,Senescent2_vs_Control2,1.175,0.35,p=0.00549,primary human corneal endothelial cells,in vitro,wildtype,human,Endothelial
+GSE144752,Senescent1_vs_Control1,0.347,0.752,N.S.,BJ hTERT fibroblast,in vitro,wildtype,human,Fibroblasts
+GSE155680,Senescent1_vs_Control1,0.813,0.216,p=0.00052,primary human umbilical vein endothelial cells,in vitro,wildtype,human,Endothelial
+GSE155903,Senescent1_vs_Control1,2.236,2.532,N.S.,IMR90 ER:RAS cell line,in vitro,genetically edited (ER:RAS),human,Fibroblasts
+GSE156038,Senescent1_vs_Control1,0.821,0.195,p=0.00008,human prostate primary stromal cells,in vitro,wildtype,human,Stromal
+GSE156184,Senescent1_vs_Control1,0.821,0.195,p=0.00008,Normal human prostate derived primary stromal cells,in vitro,wildtype,human,Stromal
+GSE156472,Senescent1_vs_Control1,0.821,0.195,p=0.00008,primary human prostate stromal cells,in vitro,wildtype,human,Stromal
+GSE157867,Senescent1_vs_Control1,1.377,0.428,p=0.03245,human umbilical vein endothelial cell,in vitro,wildtype,human,Endothelial
+GSE160273,Senescent1_vs_Control1,0.909,0.338,p=0.02973,human bone mesenchymal stem cells,in vitro,wildtype,human,Stromal
+GSE160702,Senescent1_vs_Control1,0.542,0.159,p=0.00561,human endometrial stromal cells,in vitro,wildtype,human,Stromal
+GSE165406,Senescent1_vs_Control1,0.962,0.123,p<0.00001,human umbilical vein endothelial cells,in vitro,c1 wildtype; s1 genetically edited (siRNA knockdown of CCM2),human,Endothelial
+GSE166035,Senescent1_vs_Control1,0.89,0.43,N.S.,primary small airway epithelial cells,in vitro,wildtype,human,Epithelial
+GSE166035,Senescent2_vs_Control2,0.808,0.381,N.S.,primary small airway epithelial cells,in vitro,wildtype,human,Epithelial
+GSE166059,Senescent1_vs_Control1,0.888,0.131,p<0.00001,human SAEC cells,in vitro,wildtype,human,Other
+GSE166059,Senescent2_vs_Control2,1.404,0.154,p<0.00001,human SAEC cells,in vitro,wildtype,human,Other
+GSE176199,Senescent1_vs_Control1,-1.567,0.257,p<0.00001,human cartilage mesenchymal stromal cells,in vitro,wildtype,human,Chondrocytes
+GSE176324,Senescent1_vs_Control1,-0.756,0.595,N.S.,primary human pancreatic islets,in vitro,wildtype,human,Pancreatic
+GSE180361,Senescent1_vs_Control1,2.261,1.366,N.S.,human IMR90 fibroblasts,in vitro,s1 p16 overexpression; c1 wildtype,human,Fibroblasts
+GSE180361,Senescent2_vs_Control2,-0.579,0.196,p=0.00752,human keratinocytes,in vitro,s2 HRAS G12V overexpression; c2 wildtype,human,Epithelial
+GSE180406,Senescent1_vs_Control1,2.892,2.152,N.S.,human MRC-5 cell line,in vitro,wildtype,human,Other
+GSE184892,Senescent1_vs_Control1,2.233,0.493,p=0.00005,human primary fibroblast,in vitro,wildtype,human,Fibroblasts
+GSE198396,Senescent1_vs_Control1,4.783,0.908,p<0.00001,human foreskin fibroblast cell line HCA2,in vitro,wildtype,human,Fibroblasts
+GSE207816,Senescent1_vs_Control1,2.063,0.942,N.S.,human pancreatic beta cells,in vitro,wildtype,human,Pancreatic
+GSE234417,Senescent1_vs_Control1,-0.377,2.272,N.S.,WI-38 cells,in vitro,wildtype,human,Fibroblasts
+GSE235768,Senescent1_vs_Control1,-0.006,0.965,N.S.,human normal skin fibroblasts,in vitro,wildtype,human,Fibroblasts
+GSE235768,Senescent2_vs_Control2,-0.008,0.987,N.S.,human normal skin fibroblasts,in vitro,wildtype,human,Fibroblasts
+GSE235768,Senescent3_vs_Control3,0,1.916,N.S.,human normal lung fibroblasts,in vitro,wildtype,human,Fibroblasts
+GSE245045,Senescent1_vs_Control1,2.113,0.897,N.S.,primary dermal fibroblast,in vitro,wildtype,human,Fibroblasts
+GSE245147,Senescent1_vs_Control1,4.041,0.506,p<0.00001,human nucleus pulposus cells,in vitro,wildtype,human,Musculoskeletal
+GSE246073,Senescent1_vs_Control1,-3.024,0.806,p=0.01234,human astrocytes derived from hESC,in vitro,wildtype,human,Neural
+GSE250224,Senescent1_vs_Control1,0.057,0.073,N.S.,human corneal endothelial cell,in vitro,wildtype,human,Endothelial
+GSE250224,Senescent2_vs_Control1,-0.277,0.074,p=0.00068,human corneal endothelial cell,in vitro,wildtype,human,Endothelial
+GSE251814,Senescent1_vs_Control1,-1.424,0.701,N.S.,human induced pluripotent stem cells,in vitro,genetically edited (inducible CRISPRi targeting TERF2),human,Other
+GSE264316,Senescent1_vs_Control1,4.726,1.652,p=0.00833,human primary prostate stromal cell line,in vitro,wildtype,human,Stromal
+GSE268487,Senescent1_vs_Control1,7.832,1.389,p<0.00001,human lung fibroblasts,in vitro,wildtype,human,Fibroblasts
+GSE275256,Senescent1_vs_Control1,1.853,0.567,p=0.00380,human immortalized microglia cell line,in vitro,wildtype,human,Neural
+GSE280365,Senescent1_vs_Control1,5.049,0.532,p<0.00001,lung fibroblasts,in vitro,WT,human,Fibroblasts
+GSE287646,Senescent1_vs_Control1,-0.109,0.268,N.S.,human ASC52telo mesenchymal stem cells,in vitro,wildtype,human,Stromal
+GSE294733,Senescent1_vs_Control1,-2.616,0.677,p=0.00070,human umbilical vein endothelial cells,in vitro,wildtype,human,Endothelial
+GSE294733,Senescent2_vs_Control1,-6.106,1.046,p<0.00001,human umbilical vein endothelial cells,in vitro,wildtype,human,Endothelial
+GSE56293,Senescent1_vs_Control1,-0.073,0.692,N.S.,human BJ foreskin fibroblasts,in vitro,wildtype,human,Fibroblasts
+GSE60340,Senescent2_vs_Control1,2.735,2.158,N.S.,MDAH041 LFS fibroblasts,in vitro,wildtype,human,Fibroblasts
+GSE61130,Senescent1_vs_Control1,0.939,2.384,N.S.,human IMR90 fibroblasts,in vitro,wildtype,human,Fibroblasts
+GSE63577,Senescent3_vs_Control3,3.748,1.443,p=0.02783,human HFF fibroblasts,in vitro,wildtype,human,Fibroblasts
+GSE94280,Senescent1_vs_Control1,2.704,0.399,p<0.00001,human BJ fibroblast,in vitro,wildtype,human,Fibroblasts
+GSE133292,Senescent1_vs_Control1,2.969,0.427,p<0.00001,human foreskin fibroblasts,in vitro,wildtype,human,Fibroblasts
+GSE155371,Senescent1_vs_Control1,-0.659,0.327,N.S.,primary human oral keratinocytes,in vitro,wildtype,human,Epithelial
+GSE165532,Senescent2_vs_Control2,2.712,1.777,N.S.,human WI-38 fibroblast cell line,in vitro,wildtype,human,Fibroblasts
+GSE230181,Senescent1_vs_Control1,-0.745,1.466,N.S.,s1 IMR90 cell line; s1 ADSC; c1 ADSC; s1 RPTEC; c1 RPTEC; s1 HUVEC; c1 HUVEC; s1 HMVEC; c1 HMVEC,in vitro,wildtype,human,Fibroblasts
+GSE230181,Senescent8_vs_Control1,-9.814,2.734,p=0.00163,IMR90 cell line,in vitro,wildtype,human,Fibroblasts
+GSE230181,Senescent2_vs_Control1,-9.483,2.237,p=0.00009,IMR90 cell line,in vitro,wildtype,human,Fibroblasts
+GSE230181,Senescent3_vs_Control1,-7.666,2.173,p=0.00160,IMR90 cell line,in vitro,wildtype,human,Fibroblasts
+GSE230181,Senescent4_vs_Control1,-4.685,2.068,N.S.,IMR90 cell line,in vitro,wildtype,human,Fibroblasts
+GSE230181,Senescent6_vs_Control1,-9.543,2.734,p=0.00227,IMR90 cell line,in vitro,wildtype,human,Fibroblasts
+GSE230181,Senescent7_vs_Control1,-9.67,2.237,p=0.00008,IMR90 cell line,in vitro,wildtype,human,Fibroblasts
+GSE230181,Senescent5_vs_Control1,-4.361,2.058,N.S.,IMR90 cell line,in vitro,wildtype,human,Fibroblasts
+GSE230181,Senescent9_vs_Control1,-9.863,2.435,p=0.00026,IMR90 cell line,in vitro,wildtype,human,Fibroblasts
+GSE230358,Senescent1_vs_Control1,-0.328,1.521,N.S.,human IMR90 fibroblast cell line,in vitro,wildtype,human,Fibroblasts
+GSE230358,Senescent8_vs_Control1,-23.11,3.237,p<0.00001,human IMR90 fibroblast cell line,in vitro,wildtype,human,Fibroblasts
+GSE230358,Senescent2_vs_Control1,-23.235,3.237,p<0.00001,human IMR90 fibroblast cell line,in vitro,wildtype,human,Fibroblasts
+GSE230358,Senescent3_vs_Control1,-22.972,3.237,p<0.00001,human IMR90 fibroblast cell line,in vitro,wildtype,human,Fibroblasts
+GSE230358,Senescent4_vs_Control1,-6.612,2.521,p=0.03100,human IMR90 fibroblast cell line,in vitro,wildtype,human,Fibroblasts
+GSE230358,Senescent6_vs_Control1,-2.041,3.027,N.S.,human IMR90 fibroblast cell line,in vitro,wildtype,human,Fibroblasts
+GSE230358,Senescent7_vs_Control1,-22.884,2.604,p<0.00001,human IMR90 fibroblast cell line,in vitro,wildtype,human,Fibroblasts
+GSE230358,Senescent5_vs_Control1,-6.379,3.113,N.S.,human IMR90 fibroblast cell line,in vitro,wildtype,human,Fibroblasts
+GSE230358,Senescent9_vs_Control1,-23.199,2.604,p<0.00001,human IMR90 fibroblast cell line,in vitro,wildtype,human,Fibroblasts
+GSE295083,Senescent1_vs_Control1,-2.416,1.553,N.S.,human primary fibroblasts,in vitro,wildtype,human,Fibroblasts
+GSE296209,Senescent1_vs_Control1,0.979,0.389,p=0.03218,human primary prostate stromal cells,in vitro,wildtype,human,Stromal
+GSE216842,Senescent1_vs_Control1,3.376,1.412,p=0.03272,human primary stromal cell line,in vitro,wildtype,human,Stromal
+GSE216842,Senescent2_vs_Control2,1.327,1.138,N.S.,human primary stromal cell line,in vitro,wildtype,human,Stromal
+GSE216842,Senescent4_vs_Control4,2.451,1.721,N.S.,human primary stromal cell line,in vitro,wildtype,human,Stromal
+GSE280050,Senescent1_vs_Control1,-1.653,0.297,p<0.00001,human cardiac organoids,in vitro,wildtype,human,Other

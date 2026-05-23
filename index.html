@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta
+    name="description"
+    content="Visualization platform for pooled bulk RNA-seq analysis of senescent cells. Helps researchers identify whether a gene changes consistently across senescence inducers and cell lines."
+  >
+  <meta
+    property="og:description"
+    content="Visualization platform for pooled bulk RNA-seq analysis of senescent cells. Helps researchers identify whether a gene changes consistently across senescence inducers and cell lines."
+  >
+  <meta
+    name="twitter:description"
+    content="Visualization platform for pooled bulk RNA-seq analysis of senescent cells. Helps researchers identify whether a gene changes consistently across senescence inducers and cell lines."
+  >
+  <title>SenBulk</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script defer src="assets/vendor/plotly-basic.min.js"></script>
+  <script defer src="assets/app.js"></script>
+</head>
+<body data-view="home">
+  <div class="app-shell">
+    <div class="home-actions">
+      <button class="about-toggle" id="home-about-toggle" type="button" aria-haspopup="dialog" aria-controls="about-dialog" aria-expanded="false">
+        About
+      </button>
+      <button class="theme-toggle theme-toggle-floating" data-theme-toggle type="button" aria-label="Toggle dark mode" aria-pressed="false">
+        <span class="theme-icon theme-icon-sun" aria-hidden="true">
+          <svg viewBox="0 -960 960 960" focusable="false">
+            <path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"></path>
+          </svg>
+        </span>
+        <span class="theme-icon theme-icon-moon" aria-hidden="true">
+          <svg viewBox="0 -960 960 960" focusable="false">
+            <path d="M484-80q-84 0-157.5-32t-128-86.5Q144-253 112-326.5T80-484q0-146 93-257.5T410-880q-18 99 11 193.5T521-521q71 71 165.5 100T880-410q-26 144-138 237T484-80Zm0-80q88 0 163-44t118-121q-86-8-163-43.5T464-465q-61-61-97-138t-43-163q-77 43-120.5 118.5T160-484q0 135 94.5 229.5T484-160Zm-20-305Z"></path>
+          </svg>
+        </span>
+      </button>
+    </div>
+
+    <div class="about-dialog is-hidden" id="about-dialog" role="dialog" aria-modal="true" aria-labelledby="about-dialog-title" aria-describedby="about-dialog-copy">
+      <div class="about-dialog-panel">
+        <div class="about-dialog-header">
+          <h2 class="about-dialog-title" id="about-dialog-title">About SenBulk</h2>
+          <button class="about-dialog-close" id="about-dialog-close" type="button" aria-label="Close about dialog">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <p class="about-dialog-copy" id="about-dialog-copy">
+          SenBulk is a visualization platform for pooled bulk RNA-seq analysis of senescent cells.
+        </p>
+        <p class="about-dialog-copy">
+          It helps researchers check whether a gene is consistently changing across different senescence inducers, cell lines, and experimental settings by bringing study-level results into one searchable view.
+        </p>
+      </div>
+    </div>
+
+    <header class="topbar" aria-label="Dashboard header">
+      <button class="brand brand-button" id="brand-home-button" type="button" aria-label="Return to home search">
+        <img class="brand-mark" src="assets/images/senbulk-logo.svg" alt="SenBulk logo">
+        <span class="brand-copy">
+          <strong>SenBulk</strong>
+          <small>Pooled bulk RNA-seq analysis of senescent cells</small>
+        </span>
+      </button>
+      <div class="topbar-center">
+        <div class="topbar-search-slot" id="dashboard-search-mount"></div>
+        <div class="progress-track" id="loading-progress" aria-live="polite" aria-label="Loading gene data" aria-hidden="true">
+          <span class="progress-bar"></span>
+        </div>
+      </div>
+      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle dark mode" aria-pressed="false">
+        <span class="theme-icon theme-icon-sun" aria-hidden="true">
+          <svg viewBox="0 -960 960 960" focusable="false">
+            <path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"></path>
+          </svg>
+        </span>
+        <span class="theme-icon theme-icon-moon" aria-hidden="true">
+          <svg viewBox="0 -960 960 960" focusable="false">
+            <path d="M484-80q-84 0-157.5-32t-128-86.5Q144-253 112-326.5T80-484q0-146 93-257.5T410-880q-18 99 11 193.5T521-521q71 71 165.5 100T880-410q-26 144-138 237T484-80Zm0-80q88 0 163-44t118-121q-86-8-163-43.5T464-465q-61-61-97-138t-43-163q-77 43-120.5 118.5T160-484q0 135 94.5 229.5T484-160Zm-20-305Z"></path>
+          </svg>
+        </span>
+      </button>
+    </header>
+
+    <main class="main-shell">
+      <section class="home-screen panel-shell" id="home-screen" aria-labelledby="home-title">
+        <div class="hero-panel">
+          <div class="hero-brand">
+            <img class="hero-logo" src="assets/images/senbulk-logo.svg" alt="SenBulk logo">
+            <h1 id="home-title">SenBulk</h1>
+            <p class="home-subtitle">Pooled bulk RNA-seq analysis of senescent cells</p>
+          </div>
+
+          <div class="home-search-mount" id="home-search-mount">
+            <div class="search-shell" id="shared-search-shell">
+              <form class="search-panel search-panel-home" id="home-search-form" novalidate>
+                <div class="search-field search-field-compact search-field-home" id="shared-search-field">
+                  <input
+                    id="home-search-input"
+                    class="search-input search-input-home"
+                    name="gene"
+                    type="text"
+                    inputmode="search"
+                    autocapitalize="characters"
+                    autocomplete="off"
+                    spellcheck="false"
+                    placeholder="Type a gene symbol"
+                    aria-label="Gene symbol"
+                    aria-autocomplete="list"
+                  >
+                  <button class="search-clear-button is-inactive" id="home-search-clear" type="button" aria-label="Clear search field" data-clear-field>
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                  <button class="primary-button inline-button home-inline-button" id="home-search-submit" type="submit" disabled>Visualize</button>
+                </div>
+              </form>
+              <div class="suggestions-card is-hidden" id="home-suggestions-card">
+                <ul class="suggestions-list" id="home-suggestions-list" role="listbox" aria-label="Suggested genes"></ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="dashboard-screen panel-shell" id="dashboard-screen" aria-label="Gene dashboard">
+        <div class="dashboard-grid">
+          <aside class="dashboard-column dashboard-column-side">
+            <article class="card stats-card">
+              <div class="card-header">
+                <span class="eyebrow" id="summary-eyebrow">Summary</span>
+              </div>
+              <dl class="stats-grid">
+                <div class="stat-chip">
+                  <dt>Comparisons</dt>
+                  <dd id="stat-comparisons">-</dd>
+                </div>
+                <div class="stat-chip">
+                  <dt>padj&lt;0.05</dt>
+                  <dd id="stat-significant">-</dd>
+                </div>
+                <div class="stat-chip">
+                  <dt>Median log2FC</dt>
+                  <dd id="stat-median">-</dd>
+                </div>
+              </dl>
+              <div class="direction-summary">
+                <div class="direction-summary-head">
+                  <h3 class="direction-summary-title">Fold change direction</h3>
+                  <span class="direction-summary-counts">
+                    <span class="direction-count direction-count-up" id="direction-up-count">Up 0</span>
+                    <span class="direction-count-separator">|</span>
+                    <span class="direction-count direction-count-down" id="direction-down-count">Down 0</span>
+                  </span>
+                </div>
+                <div class="direction-bar" aria-hidden="true">
+                  <span class="direction-segment direction-segment-up" id="direction-up-bar"></span>
+                  <span class="direction-segment direction-segment-down" id="direction-down-bar"></span>
+                </div>
+                <div class="direction-summary-scale">
+                  <span class="direction-scale-up" id="direction-up-label">0%</span>
+                  <span class="direction-scale-down" id="direction-down-label">0%</span>
+                </div>
+                <label class="control-field control-checkbox-row direction-summary-filter" for="direction-significant-only">
+                  <span class="control-label">Significant only</span>
+                  <input class="control-checkbox" id="direction-significant-only" type="checkbox">
+                </label>
+              </div>
+            </article>
+          </aside>
+
+          <section class="dashboard-column dashboard-column-main">
+            <article class="card plot-card">
+              <div class="card-header card-header-inline">
+                <div class="view-tabs" role="tablist" aria-label="Dashboard views">
+                  <span class="view-tab-indicator" id="view-tab-indicator" aria-hidden="true"></span>
+                  <button class="view-tab is-active" id="plot-tab-button" type="button" role="tab" aria-selected="true" aria-controls="plot-tab-panel" data-tab-target="plot">Plot</button>
+                  <button class="view-tab" id="csv-tab-button" type="button" role="tab" aria-selected="false" aria-controls="csv-tab-panel" data-tab-target="csv">Raw CSV</button>
+                </div>
+              </div>
+              <section class="tab-panel" id="plot-tab-panel" role="tabpanel" aria-labelledby="plot-tab-button" data-tab-panel="plot">
+                <p class="plot-description" id="plot-description">
+                  <span class="plot-description-icon" aria-hidden="true">i</span>
+                  <span id="plot-description-text">Hover over each point to view experiment details. Click on legend to isolate group.</span>
+                </p>
+                <div class="plot-surface">
+                  <div class="status-card" id="plot-status-card">
+                    <h3 class="status-title">Search for a gene to begin</h3>
+                    <p class="status-copy">The dashboard will fetch <code>data/genes/&lt;GENE&gt;.csv</code> and render the result in place.</p>
+                  </div>
+                  <div class="plot-host is-hidden" id="forest-plot" aria-label="Plot"></div>
+                  <div class="plot-resize-handle plot-resize-handle-east" data-resize-handle="east" aria-hidden="true"></div>
+                  <div class="plot-resize-handle plot-resize-handle-south" data-resize-handle="south" aria-hidden="true"></div>
+                  <div class="plot-resize-handle plot-resize-handle-corner" data-resize-handle="southeast" aria-hidden="true"></div>
+                </div>
+                <div class="plot-actions">
+                  <div class="export-actions">
+                    <button class="secondary-button export-button" id="export-png-button" type="button" disabled>Export PNG</button>
+                    <button class="secondary-button export-button" id="export-svg-button" type="button" disabled>Export SVG</button>
+                  </div>
+                </div>
+              </section>
+
+              <section class="tab-panel is-hidden" id="csv-tab-panel" role="tabpanel" aria-labelledby="csv-tab-button" data-tab-panel="csv">
+                <pre class="csv-block"><code id="raw-csv-content">No data loaded.</code></pre>
+                <div class="plot-actions">
+                  <button class="secondary-button copy-button" id="copy-csv-button" type="button" disabled>Copy CSV</button>
+                </div>
+              </section>
+            </article>
+
+            <article class="card controls-card">
+              <div class="card-header">
+                <h2 class="card-title">Customize the plot</h2>
+              </div>
+              <div class="control-grid">
+                <label class="control-field" for="plot-color-mode">
+                  <span class="control-label">Color by</span>
+                  <select class="control-select" id="plot-color-mode">
+                    <option value="significance" selected>padj&lt;0.05</option>
+                    <option value="direction">log2FC &gt; 0</option>
+                    <option value="organism">organism</option>
+                    <option value="simple_label">simple_label</option>
+                  </select>
+                </label>
+                <div class="control-field">
+                  <span class="control-label">Plot scale</span>
+                  <div class="control-range-row">
+                    <input class="control-range" id="plot-scale-slider" type="range" min="50" max="300" step="1" value="150">
+                    <label class="control-number-wrap" for="plot-scale-input">
+                      <input class="control-number" id="plot-scale-input" type="number" min="50" max="300" step="1" inputmode="numeric" value="150">
+                      <span class="control-suffix">%</span>
+                    </label>
+                  </div>
+                </div>
+                <div class="control-field">
+                  <span class="control-label">Dot size</span>
+                  <div class="control-range-row">
+                    <input class="control-range" id="plot-dot-scale-slider" type="range" min="5" max="300" step="1" value="40">
+                    <label class="control-number-wrap" for="plot-dot-scale-input">
+                      <input class="control-number" id="plot-dot-scale-input" type="number" min="5" max="300" step="1" inputmode="numeric" value="40">
+                      <span class="control-suffix">%</span>
+                    </label>
+                  </div>
+                </div>
+                <label class="control-field control-checkbox-row" for="plot-dot-outline">
+                  <span class="control-label">Dot outline</span>
+                  <input class="control-checkbox" id="plot-dot-outline" type="checkbox">
+                </label>
+              </div>
+            </article>
+
+            <article class="card help-card">
+              <div class="card-header">
+                <h2 class="card-title">How to read it</h2>
+              </div>
+              <ul class="help-list">
+                <li>Rows are sorted from highest to lowest reported <code>log2fc</code>; senescent vs ctrl. conditions.</li>
+                <li>Horizontal bars show <code>lfcSE</code> from DESeq2.</li>
+                <li>When effect bars of one study cross the zero line on the Y-axis, the results are statistically non-significant for that study.</li>
+                <li>A single study may have multiple entries because some studies include several senescence conditions and corresponding matched control conditions.</li>
+				<li>All analyses were conducted using DESeq2 with data obtained from ARCHS4.</li>
+              </ul>
+            </article>
+          </section>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <p class="footer-copy">
+        <a id="footer-maintainer-link" href="#" rel="noreferrer"><span id="footer-maintainer"></span></a>
+        <span class="footer-separator">|</span>
+        <span id="footer-updated"></span>
+        <span class="footer-separator">|</span>
+        <a class="footer-link" id="footer-repo-link" href="#" rel="noreferrer">
+          <span class="footer-link-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" focusable="false">
+              <path d="M12 2C6.477 2 2 6.596 2 12.266c0 4.536 2.865 8.384 6.839 9.742.5.096.682-.223.682-.495 0-.245-.009-.894-.014-1.754-2.782.62-3.369-1.384-3.369-1.384-.455-1.182-1.11-1.497-1.11-1.497-.908-.637.069-.624.069-.624 1.004.072 1.532 1.058 1.532 1.058.893 1.57 2.341 1.116 2.91.853.091-.666.35-1.116.636-1.373-2.221-.26-4.555-1.14-4.555-5.074 0-1.121.389-2.038 1.029-2.757-.103-.261-.446-1.31.097-2.73 0 0 .839-.276 2.75 1.053A9.303 9.303 0 0 1 12 6.84a9.27 9.27 0 0 1 2.504.35c1.91-1.329 2.748-1.053 2.748-1.053.544 1.42.201 2.469.099 2.73.64.719 1.027 1.636 1.027 2.757 0 3.944-2.337 4.811-4.566 5.066.359.317.679.943.679 1.9 0 1.372-.012 2.478-.012 2.815 0 .274.18.596.688.494C19.137 20.646 22 16.8 22 12.266 22 6.596 17.523 2 12 2Z"></path>
+            </svg>
+          </span>
+          <span>View on GitHub</span>
+        </a>
+      </p>
+    </footer>
+  </div>
+
+  <div class="sr-only" id="live-region" aria-live="polite"></div>
+</body>
+</html>

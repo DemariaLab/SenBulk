@@ -14,6 +14,7 @@ const PNG_EXPORT_WIDTH = 2000;
 const COPY_CSV_BUTTON_DEFAULT = "Copy CSV";
 const COPY_CSV_BUTTON_SUCCESS = "Copied to clipboard!";
 const PLOT_LEGEND_RADIUS = 5;
+const HOME_TRY_GENES = ["CDKN2A", "HMGB2", "CCND1"];
 
 const state = {
   currentView: "home",
@@ -32,7 +33,8 @@ const state = {
   searchBoxes: [],
   activeTab: "plot",
   theme: "light",
-  copyCsvFeedbackTimeout: null
+  copyCsvFeedbackTimeout: null,
+  homeTryGenesDismissed: false
 };
 
 const elements = {};
@@ -516,6 +518,7 @@ function initialiseSearch() {
       suggestionsListId: "home-suggestions-list"
     })
   ];
+  initialiseHomeTryGenesHint();
 
   window.addEventListener("resize", refreshVisibleSuggestions);
   if (window.visualViewport) {
@@ -526,6 +529,58 @@ function initialiseSearch() {
   window.setTimeout(() => {
     state.searchBoxes[0].input.focus();
   }, 50);
+}
+
+function initialiseHomeTryGenesHint() {
+  if (!elements.sharedSearchForm || !elements.sharedSearchShell || elements.homeTryGenesHint) {
+    return;
+  }
+
+  const hint = document.createElement("div");
+  hint.className = "home-try-genes";
+  hint.append("Try ");
+
+  HOME_TRY_GENES.forEach((gene, index) => {
+    const link = document.createElement("a");
+    link.href = `?gene=${encodeURIComponent(gene)}`;
+    link.className = "home-try-gene";
+    link.textContent = gene;
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      dismissHomeTryGenesHint({ permanent: true });
+      submitGene(gene);
+    });
+    hint.append(link);
+
+    if (index < HOME_TRY_GENES.length - 2) {
+      hint.append(", ");
+    } else if (index === HOME_TRY_GENES.length - 2) {
+      hint.append(", or ");
+    } else {
+      hint.append(".");
+    }
+  });
+
+  elements.sharedSearchForm.insertAdjacentElement("afterend", hint);
+  elements.homeTryGenesHint = hint;
+  syncHomeTryGenesHintVisibility();
+}
+
+function dismissHomeTryGenesHint(options = {}) {
+  if (options.permanent) {
+    state.homeTryGenesDismissed = true;
+  }
+
+  syncHomeTryGenesHintVisibility();
+}
+
+function syncHomeTryGenesHintVisibility() {
+  if (!elements.homeTryGenesHint || !elements.sharedSearchInput) {
+    return;
+  }
+
+  const hasValue = normaliseGene(elements.sharedSearchInput.value).length > 0;
+  elements.homeTryGenesHint.classList.toggle("is-dismissed", state.homeTryGenesDismissed || hasValue);
 }
 
 function refreshVisibleSuggestions() {
@@ -550,6 +605,7 @@ function mountSharedSearch(view) {
   elements.sharedSearchSubmit.classList.toggle("secondary-button", isDashboard);
   elements.sharedSearchSubmit.classList.toggle("home-inline-button", !isDashboard);
   elements.sharedSearchInput.placeholder = isDashboard ? "Search another gene" : "Type a gene symbol";
+  syncHomeTryGenesHintVisibility();
 }
 
 function createSearchBox(config) {
@@ -577,6 +633,9 @@ function createSearchBox(config) {
 
   box.input.addEventListener("input", async () => {
     box.input.value = normaliseGene(box.input.value);
+    if (box.input.value.length > 0) {
+      dismissHomeTryGenesHint({ permanent: true });
+    }
     clearSearchFeedback();
     syncSearchBoxes(box.input.value, box.input);
     await updateSuggestions(box);
@@ -818,6 +877,7 @@ function syncSearchBoxes(value, sourceInput) {
     box.input.value = value;
     updateSearchBoxControls(box);
   });
+  syncHomeTryGenesHintVisibility();
 }
 
 function updateSearchBoxControls(box) {

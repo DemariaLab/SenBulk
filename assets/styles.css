@@ -489,6 +489,39 @@ body[data-view="dashboard"] .home-screen {
   position: relative;
 }
 
+.home-try-genes {
+  margin-top: 0.8rem;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 0.94rem;
+  line-height: 1.5;
+  text-align: center;
+  opacity: 1;
+  max-height: 3rem;
+  transform: translateY(0);
+  transition: opacity 180ms ease, transform 180ms ease, max-height 180ms ease, margin-top 180ms ease;
+}
+
+.home-try-genes.is-dismissed {
+  margin-top: 0;
+  opacity: 0;
+  max-height: 0;
+  pointer-events: none;
+  transform: translateY(-0.2rem);
+}
+
+.home-try-gene {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+}
+
+.home-try-gene:hover,
+.home-try-gene:focus-visible {
+  color: var(--accent-strong);
+}
+
 .search-label {
   display: block;
   margin-bottom: 0.45rem;
@@ -677,6 +710,10 @@ body[data-theme="dark"] .secondary-button {
 
 .dashboard-screen {
   padding: 0.2rem 0 0.7rem;
+}
+
+body[data-view="dashboard"] .home-try-genes {
+  display: none;
 }
 
 .dashboard-grid {

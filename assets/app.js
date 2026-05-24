@@ -3,7 +3,7 @@ const APP_CONFIG = {
   maintainer: "DemariaLab",
   maintainerUrl: "https://demarialab.com/",
   lastUpdated: "2026 March",
-  issueUrl: ""
+  issueUrl: "https://github.com/DemariaLab/SenBulk"
 };
 
 const PLOT_PREFERENCES_KEY = "senbulk-plot-preferences";

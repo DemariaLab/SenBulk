@@ -1112,7 +1112,7 @@ function renderDashboard(gene, rows) {
 
   updateSummaryEyebrow(gene);
   elements.plotDescriptionText.textContent = "Hover over each point to view experiment details. Click on legend to isolate group.";
-  elements.statComparisons.textContent = `${rows.length}`;
+  renderComparisonCountStat(rows.length);
   elements.statSignificant.textContent = `${significantCount} (${significantPercent.toFixed(1)}%)`;
   elements.statMedian.textContent = `${medianLog2fc >= 0 ? "+" : ""}${medianLog2fc.toFixed(3)}`;
   updateDirectionSummary(rows);
@@ -1133,6 +1133,24 @@ function renderDashboard(gene, rows) {
   elements.exportPngButton.disabled = false;
   elements.exportSvgButton.disabled = false;
   renderForestPlot(gene, rows);
+}
+
+function renderComparisonCountStat(comparisonCount) {
+  const totalCount = resolveTotalComparisonsCount();
+  if (!Number.isFinite(totalCount) || totalCount <= 0) {
+    elements.statComparisons.textContent = `${comparisonCount}`;
+    return;
+  }
+
+  const primaryValue = document.createElement("span");
+  primaryValue.className = "stat-comparisons-total";
+  primaryValue.textContent = `${comparisonCount}`;
+
+  const referenceValue = document.createElement("span");
+  referenceValue.className = "stat-comparisons-reference";
+  referenceValue.textContent = `out of ${totalCount} (${formatComparisonCoveragePercent((comparisonCount / totalCount) * 100)}%)`;
+
+  elements.statComparisons.replaceChildren(primaryValue, referenceValue);
 }
 
 function renderGeneError(gene, error) {
@@ -1879,6 +1897,32 @@ function calculateMedian(values) {
   }
 
   return sorted[midpoint];
+}
+
+function resolveTotalComparisonsCount() {
+  const rawValue = typeof totalComparisonsCount !== "undefined"
+    ? totalComparisonsCount
+    : globalThis.totalComparisonsCount;
+
+  if (typeof rawValue === "undefined") {
+    return null;
+  }
+
+  const parsedValue = Number.parseInt(rawValue, 10);
+  if (!Number.isFinite(parsedValue) || parsedValue < 0) {
+    return null;
+  }
+
+  return parsedValue;
+}
+
+function formatComparisonCoveragePercent(value) {
+  if (!Number.isFinite(value)) {
+    return "0";
+  }
+
+  const formattedValue = value.toFixed(1);
+  return formattedValue.endsWith(".0") ? formattedValue.slice(0, -2) : formattedValue;
 }
 
 function sanitisePlotColorMode(value) {

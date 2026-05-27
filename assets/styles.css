@@ -895,6 +895,20 @@ body[data-theme="dark"] .eyebrow {
   letter-spacing: -0.03em;
 }
 
+.stat-comparisons-total {
+  display: block;
+}
+
+.stat-comparisons-reference {
+  display: block;
+  margin-top: 0.18rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.35;
+}
+
 .stat-count-digits {
   display: inline-block;
   min-width: 3ch;

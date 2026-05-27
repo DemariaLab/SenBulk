@@ -215,7 +215,7 @@ body[data-view="dashboard"] .brand-copy small {
 
 .progress-track {
   position: relative;
-  width: 100%;
+  width: 85%;
   height: 0.2rem;
   overflow: hidden;
   border-radius: 999px;
@@ -481,7 +481,7 @@ body[data-view="dashboard"] .home-screen {
 }
 
 .progress-track {
-  width: min(100%, 550px);
+  width: min(85%, 550px);
   margin: 0 auto;
 }
 
@@ -1480,7 +1480,7 @@ body[data-view="home"] .site-footer {
   }
 
   .progress-track {
-    width: 100%;
+    width: 85%;
   }
 
   .home-actions {

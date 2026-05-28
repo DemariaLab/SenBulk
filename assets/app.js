@@ -72,6 +72,7 @@ function bindElements() {
   elements.footerMaintainerLink = document.getElementById("footer-maintainer-link");
   elements.footerUpdated = document.getElementById("footer-updated");
   elements.footerRepoLink = document.getElementById("footer-repo-link");
+  elements.plotDescription = document.getElementById("plot-description");
   elements.plotDescriptionText = document.getElementById("plot-description-text");
   elements.plotSurface = document.querySelector(".plot-surface");
   elements.plotHost = document.getElementById("forest-plot");
@@ -1111,7 +1112,7 @@ function renderDashboard(gene, rows) {
   const plotLibraryAvailable = typeof window.Plotly !== "undefined";
 
   updateSummaryEyebrow(gene);
-  elements.plotDescriptionText.textContent = "Hover over each point to view experiment details. Click on legend to isolate group.";
+  renderPlotDescriptionText(gene);
   renderComparisonCountStat(rows.length);
   elements.statSignificant.textContent = `${significantCount} (${significantPercent.toFixed(1)}%)`;
   elements.statMedian.textContent = `${medianLog2fc >= 0 ? "+" : ""}${medianLog2fc.toFixed(3)}`;
@@ -1151,6 +1152,22 @@ function renderComparisonCountStat(comparisonCount) {
   referenceValue.textContent = `out of ${totalCount} (${formatComparisonCoveragePercent((comparisonCount / totalCount) * 100)}%)`;
 
   elements.statComparisons.replaceChildren(primaryValue, referenceValue);
+}
+
+function renderPlotDescriptionText(gene) {
+  const defaultDescription = "Hover over each point to view experiment details. Click on legend to isolate group.";
+  elements.plotDescription.classList.toggle("has-note", gene === "MKI67");
+  if (gene !== "MKI67") {
+    elements.plotDescriptionText.textContent = defaultDescription;
+    return;
+  }
+
+  elements.plotDescriptionText.replaceChildren(
+    defaultDescription,
+    document.createElement("br"),
+    document.createElement("br"),
+    "Note: MK67 downregulation was used as an internal control to verify that senescent samples were not contaminated with proliferating colonies; its consistent decrease should not be interpreted as 'the most stable proliferation marker'."
+  );
 }
 
 function renderGeneError(gene, error) {

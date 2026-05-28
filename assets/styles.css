@@ -869,6 +869,10 @@ body[data-theme="dark"] .eyebrow {
   line-height: 1;
 }
 
+.plot-description.has-note .plot-description-icon {
+  align-self: flex-start;
+}
+
 .stats-grid {
   display: grid;
   gap: 0.55rem;

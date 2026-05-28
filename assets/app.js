@@ -1188,13 +1188,58 @@ function renderDashboardGeneError(gene, error) {
 }
 
 function describeGeneError(gene, error) {
-  const isMissing = error.message === "not-found";
+  const requestStatus = parseGeneRequestStatus(error);
+  const isMissing = requestStatus === 404;
   return {
     title: isMissing ? "Gene data not found" : "Unable to load gene data",
     message: isMissing
       ? `${gene} was not found. Try another gene symbol.`
-      : `The data file for ${gene} could not be loaded. Try again or choose another gene.`
+      : buildGeneLoadErrorMessage(gene, requestStatus)
   };
+}
+
+function parseGeneRequestStatus(error) {
+  if (!error || typeof error.message !== "string") {
+    return null;
+  }
+
+  if (error.message === "not-found") {
+    return 404;
+  }
+
+  const match = error.message.match(/^request-(\d{3})$/);
+  if (!match) {
+    return null;
+  }
+
+  return Number.parseInt(match[1], 10);
+}
+
+function buildGeneLoadErrorMessage(gene, requestStatus) {
+  switch (requestStatus) {
+    case 400:
+      return `The request for ${gene} was invalid.`;
+    case 401:
+      return `Authentication is required to load ${gene}.`;
+    case 403:
+      return `Access to ${gene} is currently forbidden.`;
+    case 429:
+      return `Too many requests are being made right now. Please try ${gene} again shortly.`;
+    case 500:
+      return `The server encountered an internal error while loading ${gene}.`;
+    case 502:
+      return `The server returned a bad gateway response while loading ${gene}.`;
+    case 503:
+      return `The service is currently unavailable while loading ${gene}. Please try again shortly.`;
+    case 504:
+      return `The server timed out while loading ${gene}. Please try again.`;
+    default:
+      if (Number.isFinite(requestStatus)) {
+        return `The server returned HTTP ${requestStatus} while loading ${gene}. Please try again later.`;
+      }
+
+      return `The data file for ${gene} could not be loaded due to a network or server error. Please try again later.`;
+  }
 }
 
 function showSearchFeedback(message) {

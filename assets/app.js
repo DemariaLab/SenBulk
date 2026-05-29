@@ -328,7 +328,7 @@ function syncMobileTopbarChrome(options = {}) {
   if (!isMobileTopbarChromeEnabled()) {
     state.mobileTopbarChromeOffset = 0;
     state.mobileTopbarLastScrollY = currentScrollY;
-    applyMobileTopbarChromeState({ offset: 0, chromeHeight: 0, enabled: false });
+    applyMobileTopbarChromeState({ progress: 1, chromeHeight: 0, enabled: false });
     return;
   }
 
@@ -336,7 +336,7 @@ function syncMobileTopbarChrome(options = {}) {
   if (chromeHeight <= 0) {
     state.mobileTopbarChromeOffset = 0;
     state.mobileTopbarLastScrollY = currentScrollY;
-    applyMobileTopbarChromeState({ offset: 0, chromeHeight: 0, enabled: false });
+    applyMobileTopbarChromeState({ progress: 1, chromeHeight: 0, enabled: false });
     return;
   }
 
@@ -354,13 +354,14 @@ function syncMobileTopbarChrome(options = {}) {
   }
 
   state.mobileTopbarLastScrollY = currentScrollY;
-  applyMobileTopbarChromeState({ offset: state.mobileTopbarChromeOffset, chromeHeight, enabled: true });
+  const progress = chromeHeight ? 1 - state.mobileTopbarChromeOffset / chromeHeight : 1;
+  applyMobileTopbarChromeState({ progress, chromeHeight, enabled: true });
 }
 
-function applyMobileTopbarChromeState({ offset, chromeHeight, enabled }) {
+function applyMobileTopbarChromeState({ progress, chromeHeight, enabled }) {
   elements.topbar.classList.toggle("is-mobile-collapsible", enabled);
+  elements.topbar.style.setProperty("--mobile-topbar-chrome-progress", enabled ? `${progress}` : "1");
   elements.topbar.style.setProperty("--mobile-topbar-chrome-height", enabled ? `${chromeHeight}px` : "0px");
-  elements.topbar.style.setProperty("--mobile-topbar-chrome-offset", enabled ? `${offset}px` : "0px");
 }
 
 function isMobileTopbarChromeEnabled() {

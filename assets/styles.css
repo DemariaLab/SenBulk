@@ -1498,7 +1498,7 @@ body[data-view="home"] .site-footer {
 
   body[data-view="dashboard"] .topbar {
     --mobile-topbar-chrome-height: 0px;
-    --mobile-topbar-chrome-offset: 0px;
+    --mobile-topbar-chrome-progress: 1;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1509,18 +1509,14 @@ body[data-view="home"] .site-footer {
     justify-content: space-between;
     gap: 0.8rem;
     min-width: 0;
-    padding-bottom: 0.6rem;
   }
 
   body[data-view="dashboard"] .topbar.is-mobile-collapsible .topbar-chrome {
-    height: var(--mobile-topbar-chrome-height);
-    margin-bottom: calc(-1 * var(--mobile-topbar-chrome-offset));
+    min-height: 0;
+    height: calc(var(--mobile-topbar-chrome-height) * var(--mobile-topbar-chrome-progress));
+    margin-bottom: calc(0.8rem * var(--mobile-topbar-chrome-progress));
     overflow: hidden;
-  }
-
-  body[data-view="dashboard"] .topbar.is-mobile-collapsible .topbar-chrome > .brand,
-  body[data-view="dashboard"] .topbar.is-mobile-collapsible .topbar-chrome > .theme-toggle {
-    transform: translateY(calc(-1 * var(--mobile-topbar-chrome-offset)));
+    opacity: var(--mobile-topbar-chrome-progress);
   }
 
   .topbar-center {

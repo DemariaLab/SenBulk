@@ -59,31 +59,33 @@
     </div>
 
     <header class="topbar" aria-label="Dashboard header">
-      <button class="brand brand-button" id="brand-home-button" type="button" aria-label="Return to home search">
-        <img class="brand-mark" src="assets/images/senbulk-logo.svg" alt="SenBulk logo">
-        <span class="brand-copy">
-          <strong>SenBulk</strong>
-          <small>Pooled bulk RNA-seq analysis of senescent cells</small>
-        </span>
-      </button>
+      <div class="topbar-chrome" id="topbar-chrome">
+        <button class="brand brand-button" id="brand-home-button" type="button" aria-label="Return to home search">
+          <img class="brand-mark" src="assets/images/senbulk-logo.svg" alt="SenBulk logo">
+          <span class="brand-copy">
+            <strong>SenBulk</strong>
+            <small>Pooled bulk RNA-seq analysis of senescent cells</small>
+          </span>
+        </button>
+        <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle dark mode" aria-pressed="false">
+          <span class="theme-icon theme-icon-sun" aria-hidden="true">
+            <svg viewBox="0 -960 960 960" focusable="false">
+              <path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"></path>
+            </svg>
+          </span>
+          <span class="theme-icon theme-icon-moon" aria-hidden="true">
+            <svg viewBox="0 -960 960 960" focusable="false">
+              <path d="M484-80q-84 0-157.5-32t-128-86.5Q144-253 112-326.5T80-484q0-146 93-257.5T410-880q-18 99 11 193.5T521-521q71 71 165.5 100T880-410q-26 144-138 237T484-80Zm0-80q88 0 163-44t118-121q-86-8-163-43.5T464-465q-61-61-97-138t-43-163q-77 43-120.5 118.5T160-484q0 135 94.5 229.5T484-160Zm-20-305Z"></path>
+            </svg>
+          </span>
+        </button>
+      </div>
       <div class="topbar-center">
         <div class="topbar-search-slot" id="dashboard-search-mount"></div>
         <div class="progress-track" id="loading-progress" aria-live="polite" aria-label="Loading gene data" aria-hidden="true">
           <span class="progress-bar"></span>
         </div>
       </div>
-      <button class="theme-toggle" data-theme-toggle type="button" aria-label="Toggle dark mode" aria-pressed="false">
-        <span class="theme-icon theme-icon-sun" aria-hidden="true">
-          <svg viewBox="0 -960 960 960" focusable="false">
-            <path d="M565-395q35-35 35-85t-35-85q-35-35-85-35t-85 35q-35 35-35 85t35 85q35 35 85 35t85-35Zm-226.5 56.5Q280-397 280-480t58.5-141.5Q397-680 480-680t141.5 58.5Q680-563 680-480t-58.5 141.5Q563-280 480-280t-141.5-58.5ZM200-440H40v-80h160v80Zm720 0H760v-80h160v80ZM440-760v-160h80v160h-80Zm0 720v-160h80v160h-80ZM256-650l-101-97 57-59 96 100-52 56Zm492 496-97-101 53-55 101 97-57 59Zm-98-550 97-101 59 57-100 96-56-52ZM154-212l101-97 55 53-97 101-59-57Zm326-268Z"></path>
-          </svg>
-        </span>
-        <span class="theme-icon theme-icon-moon" aria-hidden="true">
-          <svg viewBox="0 -960 960 960" focusable="false">
-            <path d="M484-80q-84 0-157.5-32t-128-86.5Q144-253 112-326.5T80-484q0-146 93-257.5T410-880q-18 99 11 193.5T521-521q71 71 165.5 100T880-410q-26 144-138 237T484-80Zm0-80q88 0 163-44t118-121q-86-8-163-43.5T464-465q-61-61-97-138t-43-163q-77 43-120.5 118.5T160-484q0 135 94.5 229.5T484-160Zm-20-305Z"></path>
-          </svg>
-        </span>
-      </button>
     </header>
 
     <main class="main-shell">

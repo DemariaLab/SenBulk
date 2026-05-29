@@ -34,7 +34,10 @@ const state = {
   activeTab: "plot",
   theme: "light",
   copyCsvFeedbackTimeout: null,
-  homeTryGenesDismissed: false
+  homeTryGenesDismissed: false,
+  mobileTopbarChromeOffset: 0,
+  mobileTopbarLastScrollY: 0,
+  mobileTopbarSyncFrame: 0
 };
 
 const elements = {};
@@ -68,6 +71,7 @@ function bindElements() {
   elements.sharedSearchField = document.getElementById("shared-search-field");
   elements.sharedSearchInput = document.getElementById("home-search-input");
   elements.sharedSearchSubmit = document.getElementById("home-search-submit");
+  elements.topbarChrome = document.getElementById("topbar-chrome");
   elements.footerMaintainer = document.getElementById("footer-maintainer");
   elements.footerMaintainerLink = document.getElementById("footer-maintainer-link");
   elements.footerUpdated = document.getElementById("footer-updated");
@@ -226,6 +230,7 @@ function resolveRepoUrl() {
 }
 
 function initialiseShell() {
+  initialiseMobileTopbarChrome();
   elements.brandHomeButton.addEventListener("click", () => {
     showHome();
   });
@@ -288,12 +293,93 @@ function initialiseShell() {
     applyPlotSurfaceDimensions({ persist: true });
     schedulePlotlyResize();
     updateTabIndicator();
+    syncMobileTopbarChrome({ force: true });
   });
+  window.addEventListener("scroll", queueMobileTopbarChromeSync, { passive: true });
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !elements.aboutDialog.classList.contains("is-hidden")) {
       closeAboutDialog({ restoreFocus: true });
     }
   });
+}
+
+function initialiseMobileTopbarChrome() {
+  state.mobileTopbarLastScrollY = getWindowScrollY();
+  syncMobileTopbarChrome({ force: true });
+}
+
+function queueMobileTopbarChromeSync() {
+  if (state.mobileTopbarSyncFrame) {
+    return;
+  }
+
+  state.mobileTopbarSyncFrame = window.requestAnimationFrame(() => {
+    state.mobileTopbarSyncFrame = 0;
+    syncMobileTopbarChrome();
+  });
+}
+
+function syncMobileTopbarChrome(options = {}) {
+  if (!elements.topbar) {
+    return;
+  }
+
+  const currentScrollY = getWindowScrollY();
+  if (!isMobileTopbarChromeEnabled()) {
+    state.mobileTopbarChromeOffset = 0;
+    state.mobileTopbarLastScrollY = currentScrollY;
+    applyMobileTopbarChromeState({ offset: 0, chromeHeight: 0, enabled: false });
+    return;
+  }
+
+  const chromeHeight = measureMobileTopbarChromeHeight();
+  if (chromeHeight <= 0) {
+    state.mobileTopbarChromeOffset = 0;
+    state.mobileTopbarLastScrollY = currentScrollY;
+    applyMobileTopbarChromeState({ offset: 0, chromeHeight: 0, enabled: false });
+    return;
+  }
+
+  if (currentScrollY <= 0) {
+    state.mobileTopbarChromeOffset = 0;
+  } else if (!options.force) {
+    const scrollDelta = currentScrollY - state.mobileTopbarLastScrollY;
+    state.mobileTopbarChromeOffset = clampDimension(
+      state.mobileTopbarChromeOffset + scrollDelta,
+      0,
+      chromeHeight
+    );
+  } else {
+    state.mobileTopbarChromeOffset = clampDimension(state.mobileTopbarChromeOffset, 0, chromeHeight);
+  }
+
+  state.mobileTopbarLastScrollY = currentScrollY;
+  applyMobileTopbarChromeState({ offset: state.mobileTopbarChromeOffset, chromeHeight, enabled: true });
+}
+
+function applyMobileTopbarChromeState({ offset, chromeHeight, enabled }) {
+  elements.topbar.classList.toggle("is-mobile-collapsible", enabled);
+  elements.topbar.style.setProperty("--mobile-topbar-chrome-height", enabled ? `${chromeHeight}px` : "0px");
+  elements.topbar.style.setProperty("--mobile-topbar-chrome-offset", enabled ? `${offset}px` : "0px");
+}
+
+function isMobileTopbarChromeEnabled() {
+  return state.currentView === "dashboard"
+    && window.matchMedia("(max-width: 720px)").matches
+    && Boolean(elements.brandHomeButton)
+    && Boolean(elements.topbarChrome);
+}
+
+function measureMobileTopbarChromeHeight() {
+  if (!elements.topbarChrome) {
+    return 0;
+  }
+
+  return Math.ceil(elements.topbarChrome.scrollHeight || elements.topbarChrome.offsetHeight || 0);
+}
+
+function getWindowScrollY() {
+  return Math.max(window.scrollY || 0, 0);
 }
 
 function openAboutDialog() {
@@ -934,6 +1020,7 @@ function showHome(options = {}) {
   }
   document.title = APP_CONFIG.title;
   announce("Home search ready.");
+  syncMobileTopbarChrome({ force: true });
   state.searchBoxes[0].input.focus();
 }
 
@@ -948,6 +1035,7 @@ function showDashboard(options = {}) {
     applyPlotSurfaceDimensions({ persist: true });
     schedulePlotlyResize();
     updateTabIndicator();
+    syncMobileTopbarChrome({ force: true });
   });
   if (!options.keepRoute) {
     announce("Dashboard opened.");

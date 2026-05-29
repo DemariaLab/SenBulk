@@ -147,6 +147,10 @@ body[data-view="dashboard"] .topbar {
   display: flex;
 }
 
+.topbar-chrome {
+  display: contents;
+}
+
 .brand {
   display: inline-flex;
   align-items: center;
@@ -1489,16 +1493,39 @@ body[data-view="home"] .site-footer {
     display: none;
     flex-wrap: wrap;
     align-items: center;
+    gap: 0;
   }
 
   body[data-view="dashboard"] .topbar {
+    --mobile-topbar-chrome-height: 0px;
+    --mobile-topbar-chrome-offset: 0px;
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .topbar-chrome {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.8rem;
+    min-width: 0;
+    padding-bottom: 0.6rem;
+  }
+
+  body[data-view="dashboard"] .topbar.is-mobile-collapsible .topbar-chrome {
+    height: var(--mobile-topbar-chrome-height);
+    margin-bottom: calc(-1 * var(--mobile-topbar-chrome-offset));
+    overflow: hidden;
+  }
+
+  body[data-view="dashboard"] .topbar.is-mobile-collapsible .topbar-chrome > .brand,
+  body[data-view="dashboard"] .topbar.is-mobile-collapsible .topbar-chrome > .theme-toggle {
+    transform: translateY(calc(-1 * var(--mobile-topbar-chrome-offset)));
   }
 
   .topbar-center {
-    grid-column: 1 / -1;
-    order: 3;
+    grid-column: 1;
+    order: 2;
     max-width: none;
     margin: 0;
   }

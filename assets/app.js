@@ -37,7 +37,10 @@ const state = {
   homeTryGenesDismissed: false,
   mobileTopbarChromeOffset: 0,
   mobileTopbarLastScrollY: 0,
-  mobileTopbarSyncFrame: 0
+  mobileTopbarSyncFrame: 0,
+  mobileTopbarTouchActive: false,
+  mobileTopbarTouchY: 0,
+  mobileTopbarTouchDirection: 0
 };
 
 const elements = {};
@@ -296,6 +299,10 @@ function initialiseShell() {
     syncMobileTopbarChrome({ force: true });
   });
   window.addEventListener("scroll", queueMobileTopbarChromeSync, { passive: true });
+  window.addEventListener("touchstart", handleMobileTopbarTouchStart, { passive: true });
+  window.addEventListener("touchmove", handleMobileTopbarTouchMove, { passive: true });
+  window.addEventListener("touchend", handleMobileTopbarTouchEnd, { passive: true });
+  window.addEventListener("touchcancel", handleMobileTopbarTouchEnd, { passive: true });
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && !elements.aboutDialog.classList.contains("is-hidden")) {
       closeAboutDialog({ restoreFocus: true });
@@ -319,6 +326,36 @@ function queueMobileTopbarChromeSync() {
   });
 }
 
+function handleMobileTopbarTouchStart(event) {
+  if (!event.touches || event.touches.length !== 1) {
+    return;
+  }
+
+  state.mobileTopbarTouchActive = true;
+  state.mobileTopbarTouchY = event.touches[0].clientY;
+  state.mobileTopbarTouchDirection = 0;
+}
+
+function handleMobileTopbarTouchMove(event) {
+  if (!state.mobileTopbarTouchActive || !event.touches || event.touches.length !== 1) {
+    return;
+  }
+
+  const currentTouchY = event.touches[0].clientY;
+  const touchDelta = currentTouchY - state.mobileTopbarTouchY;
+  if (Math.abs(touchDelta) < 2) {
+    return;
+  }
+
+  state.mobileTopbarTouchDirection = touchDelta > 0 ? 1 : -1;
+  state.mobileTopbarTouchY = currentTouchY;
+}
+
+function handleMobileTopbarTouchEnd() {
+  state.mobileTopbarTouchActive = false;
+  state.mobileTopbarTouchDirection = 0;
+}
+
 function syncMobileTopbarChrome(options = {}) {
   if (!elements.topbar) {
     return;
@@ -340,8 +377,15 @@ function syncMobileTopbarChrome(options = {}) {
     return;
   }
 
-  if (currentScrollY <= 0) {
-    state.mobileTopbarChromeOffset = 0;
+  const isAtPageTop = currentScrollY <= 1;
+  const shouldPreserveOffsetAtTop = isAtPageTop
+    && state.mobileTopbarTouchActive
+    && state.mobileTopbarTouchDirection < 0;
+
+  if (isAtPageTop) {
+    if (!shouldPreserveOffsetAtTop) {
+      state.mobileTopbarChromeOffset = 0;
+    }
   } else if (!options.force) {
     const scrollDelta = currentScrollY - state.mobileTopbarLastScrollY;
     state.mobileTopbarChromeOffset = clampDimension(
@@ -355,13 +399,19 @@ function syncMobileTopbarChrome(options = {}) {
 
   state.mobileTopbarLastScrollY = currentScrollY;
   const progress = chromeHeight ? 1 - state.mobileTopbarChromeOffset / chromeHeight : 1;
-  applyMobileTopbarChromeState({ progress, chromeHeight, enabled: true });
+  applyMobileTopbarChromeState({
+    progress,
+    chromeHeight,
+    chromeOffset: state.mobileTopbarChromeOffset,
+    enabled: true
+  });
 }
 
-function applyMobileTopbarChromeState({ progress, chromeHeight, enabled }) {
+function applyMobileTopbarChromeState({ progress, chromeHeight, chromeOffset, enabled }) {
   elements.topbar.classList.toggle("is-mobile-collapsible", enabled);
   elements.topbar.style.setProperty("--mobile-topbar-chrome-progress", enabled ? `${progress}` : "1");
   elements.topbar.style.setProperty("--mobile-topbar-chrome-height", enabled ? `${chromeHeight}px` : "0px");
+  elements.topbar.style.setProperty("--mobile-topbar-chrome-offset", enabled ? `${chromeOffset}px` : "0px");
 }
 
 function isMobileTopbarChromeEnabled() {
@@ -1486,19 +1536,20 @@ function updateDirectionSummary(rows) {
   const upPercent = directionalTotal ? (upCount / directionalTotal) * 100 : 0;
   const downPercent = directionalTotal ? (downCount / directionalTotal) * 100 : 0;
 
-  setDirectionCount(elements.directionUpCount, "Up", upCount);
-  setDirectionCount(elements.directionDownCount, "Down", downCount);
+  setDirectionCount(elements.directionUpCount, "Up");
+  setDirectionCount(elements.directionDownCount, "Down");
   elements.directionUpBar.style.width = `${upPercent}%`;
   elements.directionDownBar.style.width = `${downPercent}%`;
-  elements.directionUpLabel.textContent = `${Math.round(upPercent)}%`;
-  elements.directionDownLabel.textContent = `${Math.round(downPercent)}%`;
+  elements.directionUpLabel.textContent = formatDirectionLabel(upCount, upPercent);
+  elements.directionDownLabel.textContent = formatDirectionLabel(downCount, downPercent);
 }
 
-function setDirectionCount(element, label, count) {
-  const countDigits = document.createElement("span");
-  countDigits.className = "stat-count-digits";
-  countDigits.textContent = String(count);
-  element.replaceChildren(`${label} `, countDigits);
+function setDirectionCount(element, label) {
+  element.textContent = label;
+}
+
+function formatDirectionLabel(count, percentage) {
+  return `${count} (${Math.round(percentage)}%)`;
 }
 
 function resetSummary() {
@@ -1506,12 +1557,12 @@ function resetSummary() {
   elements.statComparisons.textContent = "-";
   elements.statSignificant.textContent = "-";
   elements.statMedian.textContent = "-";
-  setDirectionCount(elements.directionUpCount, "Up", 0);
-  setDirectionCount(elements.directionDownCount, "Down", 0);
+  setDirectionCount(elements.directionUpCount, "Up");
+  setDirectionCount(elements.directionDownCount, "Down");
   elements.directionUpBar.style.width = "0";
   elements.directionDownBar.style.width = "0";
-  elements.directionUpLabel.textContent = "0%";
-  elements.directionDownLabel.textContent = "0%";
+  elements.directionUpLabel.textContent = "0 (0%)";
+  elements.directionDownLabel.textContent = "0 (0%)";
   renderRawCsv("");
 }
 

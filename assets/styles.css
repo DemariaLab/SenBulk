@@ -917,15 +917,6 @@ body[data-theme="dark"] .eyebrow {
   line-height: 1.35;
 }
 
-.stat-count-digits {
-  display: inline-block;
-  min-width: 3ch;
-  text-align: right;
-  letter-spacing: 0;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-  font-variant-numeric: tabular-nums;
-}
-
 .plot-card {
   min-height: 100%;
 }
@@ -1373,11 +1364,6 @@ body[data-theme="dark"] .control-select {
   color: var(--down-color);
 }
 
-.direction-count-separator {
-  flex: 0 0 auto;
-  color: var(--muted);
-}
-
 .direction-bar {
   display: flex;
   width: 100%;
@@ -1499,8 +1485,14 @@ body[data-view="home"] .site-footer {
   body[data-view="dashboard"] .topbar {
     --mobile-topbar-chrome-height: 0px;
     --mobile-topbar-chrome-progress: 1;
+    --mobile-topbar-chrome-offset: 0px;
     display: grid;
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  body[data-view="dashboard"] .topbar.is-mobile-collapsible {
+    transform: translate3d(0, calc(var(--mobile-topbar-chrome-offset) * -1), 0);
+    will-change: transform;
   }
 
   .topbar-chrome {
@@ -1509,14 +1501,12 @@ body[data-view="home"] .site-footer {
     justify-content: space-between;
     gap: 0.8rem;
     min-width: 0;
+    padding-bottom: 0.8rem;
   }
 
   body[data-view="dashboard"] .topbar.is-mobile-collapsible .topbar-chrome {
-    min-height: 0;
-    height: calc(var(--mobile-topbar-chrome-height) * var(--mobile-topbar-chrome-progress));
-    margin-bottom: calc(0.8rem * var(--mobile-topbar-chrome-progress));
-    overflow: hidden;
     opacity: var(--mobile-topbar-chrome-progress);
+    will-change: opacity;
   }
 
   .topbar-center {

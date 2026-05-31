@@ -16,10 +16,10 @@
     content="Visualization platform for pooled bulk RNA-seq analysis of senescent cells. Helps researchers identify whether a gene changes consistently across senescence inducers and cell lines."
   >
   <title>SenBulk</title>
-  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/styles.css?v=20260531b">
   <script defer src="assets/vendor/plotly-basic.min.js"></script>
-  <script defer src="assets/totalComparisonsCount.js"></script>
-  <script defer src="assets/app.js"></script>
+  <script defer src="assets/totalComparisonsCount.js?v=20260531b"></script>
+  <script defer src="assets/app.js?v=20260531b"></script>
 </head>
 <body data-view="home">
   <div class="app-shell">
@@ -171,6 +171,15 @@
                 </label>
               </div>
             </article>
+
+            <article class="card correlation-card">
+              <div class="card-header">
+                <span class="eyebrow" id="correlation-eyebrow">Top correlated genes</span>
+              </div>
+              <p class="metric-copy correlation-empty" id="correlation-empty">Load a gene to see its top Pearson correlations.</p>
+              <ul class="correlation-list is-hidden" id="correlation-list"></ul>
+              <button class="secondary-button correlation-toggle is-hidden" id="correlation-toggle" type="button" aria-expanded="false" aria-controls="correlation-list">View top 20</button>
+            </article>
           </aside>
 
           <section class="dashboard-column dashboard-column-main">
@@ -266,6 +275,7 @@
 
                 <li>A single study may have multiple comparisons because some studies include several senescence conditions and corresponding matched controls.</li>
                 <li>Absent comparisons suggest insufficient statistical confidence for the specified gene in the unavailable datasets.</li>
+                <li>Gene correlations are computed using Pearson coefficients on <code>log2FC</code> values from senescent vs. ctrl. conditions.</li>
 				<li>All analyses were conducted using <code>DESeq2</code> with data obtained from <a href="https://archs4.org/"><code>ARCHS4.</code></a></li>
               </ul>
             </article>

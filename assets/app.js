@@ -14,7 +14,10 @@ const PNG_EXPORT_WIDTH = 2000;
 const COPY_CSV_BUTTON_DEFAULT = "Copy CSV";
 const COPY_CSV_BUTTON_SUCCESS = "Copied to clipboard!";
 const PLOT_LEGEND_RADIUS = 5;
-const HOME_TRY_GENES = ["CDKN2A", "HMGB2", "CCND1"];
+const HOME_TRY_GENES = ["CDKN1A", "HMGB1", "CCND1"];
+const MIN_LOADING_PROGRESS_VISIBLE_MS = 300;
+const COLLAPSED_CORRELATION_COUNT = 5;
+const EXPANDED_CORRELATION_COUNT = 50;
 
 const state = {
   currentView: "home",
@@ -30,11 +33,15 @@ const state = {
   manifestRequests: new Map(),
   geneRequestId: 0,
   currentPlotRows: [],
+  currentCorrelationRows: [],
   searchBoxes: [],
   activeTab: "plot",
   theme: "light",
   copyCsvFeedbackTimeout: null,
+  loadingProgressShownAt: 0,
+  loadingProgressHideTimeout: null,
   homeTryGenesDismissed: false,
+  correlationExpanded: false,
   mobileTopbarChromeOffset: 0,
   mobileTopbarLastScrollY: 0,
   mobileTopbarSyncFrame: 0,
@@ -110,6 +117,9 @@ function bindElements() {
   elements.directionDownBar = document.getElementById("direction-down-bar");
   elements.directionUpLabel = document.getElementById("direction-up-label");
   elements.directionDownLabel = document.getElementById("direction-down-label");
+  elements.correlationEmpty = document.getElementById("correlation-empty");
+  elements.correlationList = document.getElementById("correlation-list");
+  elements.correlationToggleButton = document.getElementById("correlation-toggle");
   elements.liveRegion = document.getElementById("live-region");
 }
 
@@ -288,6 +298,8 @@ function initialiseShell() {
   elements.directionSignificantOnlyInput.addEventListener("change", () => {
     updateDirectionSummary(state.currentPlotRows);
   });
+  elements.correlationToggleButton.addEventListener("click", expandCorrelationList);
+  elements.correlationList.addEventListener("click", handleCorrelationGeneClick);
 
   window.addEventListener("popstate", () => {
     hydrateRoute();
@@ -296,6 +308,7 @@ function initialiseShell() {
     applyPlotSurfaceDimensions({ persist: true });
     schedulePlotlyResize();
     updateTabIndicator();
+    renderCorrelationCard(state.activeGene, state.currentCorrelationRows);
     syncMobileTopbarChrome({ force: true });
   });
   window.addEventListener("scroll", queueMobileTopbarChromeSync, { passive: true });
@@ -664,9 +677,13 @@ function initialiseSearch() {
     window.visualViewport.addEventListener("scroll", refreshVisibleSuggestions);
   }
 
-  window.setTimeout(() => {
-    state.searchBoxes[0].input.focus();
-  }, 50);
+  if (!hasRequestedGeneInUrl()) {
+    window.setTimeout(() => {
+      if (state.currentView === "home") {
+        state.searchBoxes[0].input.focus();
+      }
+    }, 50);
+  }
 }
 
 function initialiseHomeTryGenesHint() {
@@ -990,7 +1007,7 @@ function updateSuggestionsMaxHeight(box) {
   const viewportBottomGap = 16;
   const formBottomInViewport = formRect.bottom - viewportOffsetTop;
   const availableHeight = Math.max(0, Math.floor(viewportHeight - formBottomInViewport - viewportBottomGap));
-  const dashboardCap = Math.floor(viewportHeight * 0.5);
+  const dashboardCap = Math.floor(viewportHeight * 0.65);
   const maxHeight = state.currentView === "dashboard" ? Math.min(availableHeight, dashboardCap) : availableHeight;
   box.suggestionsList.style.maxHeight = `${maxHeight}px`;
 }
@@ -1061,9 +1078,11 @@ function showHome(options = {}) {
   elements.exportPngButton.disabled = true;
   elements.exportSvgButton.disabled = true;
   state.currentCsvText = "";
+  state.currentCorrelationRows = [];
   clearSearchFeedback();
   selectTab("plot");
   resetSummary();
+  resetCorrelationCard();
   if (options.replaceHistory) {
     updateUrl("", true);
   } else if (window.location.search) {
@@ -1080,6 +1099,7 @@ function showDashboard(options = {}) {
   elements.body.dataset.view = "dashboard";
   closeAboutDialog();
   mountSharedSearch("dashboard");
+  state.searchBoxes.forEach((box) => hideSuggestions(box));
   clearSearchFeedback();
   selectTab(state.activeTab);
   window.requestAnimationFrame(() => {
@@ -1116,8 +1136,9 @@ async function loadGene(gene, options = {}) {
   state.activeGene = gene;
   setLoading(true);
   resetSummary();
+  resetCorrelationCard(`Loading Pearson correlations for ${gene}.`);
   updateSummaryEyebrow(gene);
-  setPlotStatus(`Loading ${gene}`, `Fetching ${gene}.csv from the static data directory.`);
+  setPlotStatus(`Loading ${gene}`, `Fetching ${gene}.csv and Pearson correlations from the static data directory.`);
   elements.exportPngButton.disabled = true;
   elements.exportSvgButton.disabled = true;
   elements.plotHost.dataset.gene = "";
@@ -1127,14 +1148,16 @@ async function loadGene(gene, options = {}) {
   }
 
   try {
-    const { csvText, rows } = await fetchGeneDataset(gene);
+    const { csvText, rows, correlations } = await fetchGeneBundle(gene);
     if (requestId !== state.geneRequestId) {
       return;
     }
 
     state.currentCsvText = csvText;
     state.currentPlotRows = rows;
-    renderDashboard(gene, rows);
+    state.currentCorrelationRows = correlations;
+    state.correlationExpanded = false;
+    renderDashboard(gene, rows, correlations);
     announce(`${gene} loaded with ${rows.length} comparisons.`);
   } catch (error) {
     if (requestId !== state.geneRequestId) {
@@ -1142,6 +1165,7 @@ async function loadGene(gene, options = {}) {
     }
 
     state.currentPlotRows = [];
+    state.currentCorrelationRows = [];
     state.currentCsvText = "";
     renderGeneError(gene, error);
   } finally {
@@ -1155,6 +1179,7 @@ async function resolveHomeGeneSubmission(gene, options = {}) {
   const requestId = ++state.geneRequestId;
   state.activeGene = gene;
   clearSearchFeedback();
+  resetCorrelationCard(`Loading Pearson correlations for ${gene}.`);
 
   if (options.scrollToTop) {
     window.scrollTo({
@@ -1164,18 +1189,20 @@ async function resolveHomeGeneSubmission(gene, options = {}) {
   }
 
   try {
-    const { csvText, rows } = await fetchGeneDataset(gene);
+    const { csvText, rows, correlations } = await fetchGeneBundle(gene);
     if (requestId !== state.geneRequestId) {
       return;
     }
 
     state.currentCsvText = csvText;
     state.currentPlotRows = rows;
+    state.currentCorrelationRows = correlations;
+    state.correlationExpanded = false;
     showDashboard({ keepRoute: true });
     if (options.pushHistory) {
       updateUrl(gene);
     }
-    renderDashboard(gene, rows);
+    renderDashboard(gene, rows, correlations);
     announce(`${gene} loaded with ${rows.length} comparisons.`);
   } catch (error) {
     if (requestId !== state.geneRequestId) {
@@ -1185,6 +1212,7 @@ async function resolveHomeGeneSubmission(gene, options = {}) {
     state.activeGene = "";
     state.currentCsvText = "";
     state.currentPlotRows = [];
+    state.currentCorrelationRows = [];
     renderHomeGeneError(gene, error);
   }
 }
@@ -1192,6 +1220,7 @@ async function resolveHomeGeneSubmission(gene, options = {}) {
 async function resolveDashboardGeneSubmission(gene, options = {}) {
   const requestId = ++state.geneRequestId;
   clearSearchFeedback();
+  resetCorrelationCard(`Loading Pearson correlations for ${gene}.`);
 
   if (options.scrollToTop) {
     window.scrollTo({
@@ -1203,7 +1232,7 @@ async function resolveDashboardGeneSubmission(gene, options = {}) {
   setLoading(true);
 
   try {
-    const { csvText, rows } = await fetchGeneDataset(gene);
+    const { csvText, rows, correlations } = await fetchGeneBundle(gene);
     if (requestId !== state.geneRequestId) {
       return;
     }
@@ -1211,10 +1240,12 @@ async function resolveDashboardGeneSubmission(gene, options = {}) {
     state.activeGene = gene;
     state.currentCsvText = csvText;
     state.currentPlotRows = rows;
+    state.currentCorrelationRows = correlations;
+    state.correlationExpanded = false;
     if (options.pushHistory) {
       updateUrl(gene);
     }
-    renderDashboard(gene, rows);
+    renderDashboard(gene, rows, correlations);
     announce(`${gene} loaded with ${rows.length} comparisons.`);
   } catch (error) {
     if (requestId !== state.geneRequestId) {
@@ -1244,7 +1275,31 @@ async function fetchGeneDataset(gene) {
   return { csvText, rows };
 }
 
-function renderDashboard(gene, rows) {
+async function fetchGeneBundle(gene) {
+  const [dataset, correlations] = await Promise.all([
+    fetchGeneDataset(gene),
+    fetchCorrelationDataset(gene)
+  ]);
+  return {
+    ...dataset,
+    correlations
+  };
+}
+
+async function fetchCorrelationDataset(gene) {
+  try {
+    const response = await fetch(`data/corr/${encodeURIComponent(gene)}.csv`, { cache: "no-cache" });
+    if (response.status === 404 || !response.ok) {
+      return [];
+    }
+
+    return parseCorrelationCsv(await response.text());
+  } catch (error) {
+    return [];
+  }
+}
+
+function renderDashboard(gene, rows, correlations = []) {
   const significantCount = rows.filter((row) => row.isSignificant).length;
   const significantPercent = rows.length ? (significantCount / rows.length) * 100 : 0;
   const medianLog2fc = calculateMedian(rows.map((row) => row.log2fc));
@@ -1256,6 +1311,7 @@ function renderDashboard(gene, rows) {
   elements.statSignificant.textContent = `${significantCount} (${significantPercent.toFixed(1)}%)`;
   elements.statMedian.textContent = `${medianLog2fc >= 0 ? "+" : ""}${medianLog2fc.toFixed(3)}`;
   updateDirectionSummary(rows);
+  renderCorrelationCard(gene, correlations);
   renderRawCsv(state.currentCsvText);
   selectTab("plot");
   document.title = `${gene} | ${APP_CONFIG.title}`;
@@ -1417,8 +1473,37 @@ function clearSearchFeedback() {
 }
 
 function setLoading(isLoading) {
-  elements.loadingProgress.classList.toggle("is-active", isLoading);
-  elements.loadingProgress.setAttribute("aria-hidden", isLoading ? "false" : "true");
+  if (isLoading) {
+    if (state.loadingProgressHideTimeout) {
+      window.clearTimeout(state.loadingProgressHideTimeout);
+      state.loadingProgressHideTimeout = null;
+    }
+
+    if (!elements.loadingProgress.classList.contains("is-active")) {
+      state.loadingProgressShownAt = Date.now();
+      elements.loadingProgress.classList.add("is-active");
+      elements.loadingProgress.setAttribute("aria-hidden", "false");
+    }
+    return;
+  }
+
+  const elapsed = Date.now() - state.loadingProgressShownAt;
+  const remaining = Math.max(0, MIN_LOADING_PROGRESS_VISIBLE_MS - elapsed);
+  const hideProgress = () => {
+    state.loadingProgressHideTimeout = null;
+    elements.loadingProgress.classList.remove("is-active");
+    elements.loadingProgress.setAttribute("aria-hidden", "true");
+  };
+
+  if (remaining === 0) {
+    hideProgress();
+    return;
+  }
+
+  if (state.loadingProgressHideTimeout) {
+    window.clearTimeout(state.loadingProgressHideTimeout);
+  }
+  state.loadingProgressHideTimeout = window.setTimeout(hideProgress, remaining);
 }
 
 function setPlotStatus(title, message) {
@@ -1568,6 +1653,108 @@ function resetSummary() {
 
 function updateSummaryEyebrow(gene) {
   elements.summaryEyebrow.textContent = gene ? `${gene} summary` : "Summary";
+}
+
+function resetCorrelationCard(message = "Load a gene to see its top Pearson correlations.") {
+  state.correlationExpanded = false;
+  elements.correlationEmpty.textContent = message;
+  elements.correlationEmpty.classList.remove("is-hidden");
+  elements.correlationList.replaceChildren();
+  elements.correlationList.classList.add("is-hidden");
+  elements.correlationToggleButton.classList.add("is-hidden");
+  elements.correlationToggleButton.setAttribute("aria-expanded", "false");
+  elements.correlationToggleButton.textContent = "Show more";
+}
+
+function renderCorrelationCard(gene, rows) {
+  if (!gene) {
+    resetCorrelationCard();
+    return;
+  }
+
+  const correlations = Array.isArray(rows) ? rows : [];
+  if (!correlations.length) {
+    resetCorrelationCard(`${gene} is not strongly correlated with any other gene in senescent cells.`);
+    return;
+  }
+
+  const showAllCorrelations = isDashboardTwoColumnLayout();
+  const expandedCount = Math.min(EXPANDED_CORRELATION_COUNT, correlations.length);
+  const collapsedCount = Math.min(COLLAPSED_CORRELATION_COUNT, correlations.length);
+  const visibleCount = showAllCorrelations
+    ? correlations.length
+    : state.correlationExpanded
+      ? expandedCount
+      : collapsedCount;
+  const fragment = document.createDocumentFragment();
+
+  correlations.slice(0, visibleCount).forEach((row) => {
+    fragment.append(createCorrelationListItem(row));
+  });
+
+  elements.correlationList.replaceChildren(fragment);
+  elements.correlationList.classList.remove("is-hidden");
+  elements.correlationEmpty.classList.add("is-hidden");
+
+  const canExpand = !showAllCorrelations
+    && !state.correlationExpanded
+    && correlations.length > COLLAPSED_CORRELATION_COUNT;
+  elements.correlationToggleButton.classList.toggle("is-hidden", !canExpand);
+  elements.correlationToggleButton.setAttribute("aria-expanded", state.correlationExpanded ? "true" : "false");
+  elements.correlationToggleButton.textContent = "Show more";
+}
+
+function createCorrelationListItem(row) {
+  const item = document.createElement("li");
+  item.className = "correlation-item";
+
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = "correlation-gene-button";
+  button.dataset.correlationGene = row.gene;
+  button.setAttribute("aria-label", `Load ${row.gene}`);
+
+  const geneLabel = document.createElement("span");
+  geneLabel.className = "correlation-gene-label";
+  geneLabel.textContent = row.gene;
+
+  const coefficientLabel = document.createElement("span");
+  coefficientLabel.className = "correlation-gene-meta";
+  coefficientLabel.classList.add(resolveCorrelationMetaClassName(row.pearson));
+  coefficientLabel.textContent = formatPearsonCoefficient(row.pearson);
+  coefficientLabel.title = `Pearson r ${formatPearsonCoefficient(row.pearson)}`;
+  coefficientLabel.setAttribute("aria-label", `Pearson correlation coefficient ${formatPearsonCoefficient(row.pearson)}`);
+
+  button.append(geneLabel, coefficientLabel);
+  item.append(button);
+  return item;
+}
+
+function expandCorrelationList() {
+  if (!state.currentCorrelationRows.length || state.correlationExpanded) {
+    return;
+  }
+
+  state.correlationExpanded = true;
+  renderCorrelationCard(state.activeGene, state.currentCorrelationRows);
+}
+
+function handleCorrelationGeneClick(event) {
+  if (!(event.target instanceof Element)) {
+    return;
+  }
+
+  const trigger = event.target.closest("[data-correlation-gene]");
+  if (!trigger) {
+    return;
+  }
+
+  const gene = normaliseGene(trigger.dataset.correlationGene);
+  if (!gene) {
+    return;
+  }
+
+  submitGene(gene);
 }
 
 function renderForestPlot(gene, rows) {
@@ -2033,6 +2220,30 @@ function parseGeneCsv(text) {
     .filter((row) => Number.isFinite(row.log2fc) && Number.isFinite(row.lfcSE));
 }
 
+function parseCorrelationCsv(text) {
+  const records = parseCsv(text);
+  if (records.length < 2) {
+    return [];
+  }
+
+  const headers = records[0].map((header) => header.trim().toLowerCase());
+  const geneIndex = headers.indexOf("gene");
+  const pearsonIndex = headers.indexOf("pearson");
+  if (geneIndex === -1 || pearsonIndex === -1) {
+    return [];
+  }
+
+  return records
+    .slice(1)
+    .filter((row) => row.some((value) => value.trim() !== ""))
+    .map((row) => ({
+      gene: normaliseGene(row[geneIndex] || ""),
+      pearson: Number.parseFloat(row[pearsonIndex])
+    }))
+    .filter((row) => row.gene && Number.isFinite(row.pearson))
+    .sort((left, right) => right.pearson - left.pearson);
+}
+
 function toTitleCase(value) {
   return String(value || "")
     .toLowerCase()
@@ -2127,6 +2338,28 @@ function formatComparisonCoveragePercent(value) {
   return formattedValue.endsWith(".0") ? formattedValue.slice(0, -2) : formattedValue;
 }
 
+function formatPearsonCoefficient(value) {
+  if (!Number.isFinite(value)) {
+    return "+0.00";
+  }
+
+  return `${value >= 0 ? "+" : ""}${value.toFixed(2)}`;
+}
+
+function isDashboardTwoColumnLayout() {
+  return !window.matchMedia("(max-width: 1100px)").matches;
+}
+
+function resolveCorrelationMetaClassName(value) {
+  if (!Number.isFinite(value) || value === 0) {
+    return "correlation-gene-meta-neutral";
+  }
+
+  return value > 0
+    ? "correlation-gene-meta-positive"
+    : "correlation-gene-meta-negative";
+}
+
 function sanitisePlotColorMode(value) {
   const allowedModes = new Set(["significance", "direction", "organism", "simple_label"]);
   return allowedModes.has(value) ? value : "significance";
@@ -2143,6 +2376,11 @@ function sanitiseBoundedInteger(value, limits) {
 
 function normaliseGene(value) {
   return (value || "").trim().toUpperCase();
+}
+
+function hasRequestedGeneInUrl() {
+  const url = new URL(window.location.href);
+  return normaliseGene(url.searchParams.get("gene") || "").length > 0;
 }
 
 function updateUrl(gene, replace = false) {

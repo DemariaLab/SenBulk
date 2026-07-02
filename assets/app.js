@@ -1821,7 +1821,7 @@ function renderForestPlot(gene, rows) {
       font: { size: plotSizing.legendFontSize, color: "#425a67" }
     },
     font: {
-      family: "\"Aptos\", \"Segoe UI Variable Display\", \"Segoe UI\", sans-serif",
+      family: "\"Helvetica\", \"Arial\", \"Aptos\", \"Segoe UI Variable Display\", \"Segoe UI\", sans-serif",
       color: "#17242d",
       size: plotSizing.baseFontSize
     },

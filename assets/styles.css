@@ -526,7 +526,7 @@ body[data-view="dashboard"] .home-screen {
   transform: translateY(-0.2rem);
 }
 
-.home-try-gene, .about-dialog-url {
+.home-try-gene, .about-dialog-url, .help-list a {
   color: var(--accent);
   text-decoration: underline;
   text-decoration-thickness: 0.08em;
@@ -1313,11 +1313,10 @@ body[data-theme="dark"] .control-select {
 
 .help-list {
   display: grid;
-  gap: 0.55rem;
-  list-style: none;
+  gap: 0.6rem;
+  padding: 0 1rem;
 }
 
-.help-list li,
 .correlation-gene-button {
   padding: 0.72rem 0.85rem;
   border-radius: var(--chip-radius);

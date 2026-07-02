@@ -526,7 +526,7 @@ body[data-view="dashboard"] .home-screen {
   transform: translateY(-0.2rem);
 }
 
-.home-try-gene {
+.home-try-gene, .about-dialog-url {
   color: var(--accent);
   text-decoration: underline;
   text-decoration-thickness: 0.08em;

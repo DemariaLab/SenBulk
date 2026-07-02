@@ -1317,7 +1317,8 @@ body[data-theme="dark"] .control-select {
   list-style: none;
 }
 
-.help-list li {
+.help-list li,
+.correlation-gene-button {
   padding: 0.72rem 0.85rem;
   border-radius: var(--chip-radius);
   background: var(--surface-soft);
@@ -1357,20 +1358,20 @@ body[data-theme="dark"] .control-select {
   align-items: center;
   justify-content: space-between;
   gap: 0.45rem;
-  padding: 0.52rem 0.65rem;
-  border: 1px solid var(--border);
-  border-radius: var(--chip-radius);
-  background: var(--surface-soft);
-  color: inherit;
   text-align: left;
   cursor: pointer;
 }
 
-.correlation-gene-button:hover,
+.correlation-gene-button:hover {
+  border-color: var(--border);
+  background: var(--surface-soft);
+}
+
 .correlation-gene-button:focus-visible {
-  border-color: color-mix(in srgb, var(--accent) 24%, var(--border));
-  background: color-mix(in srgb, var(--accent-soft) 72%, var(--surface-soft));
   outline: 0;
+  border-color: var(--border);
+  background: var(--surface-soft);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 20%, transparent);
 }
 
 .correlation-gene-label {
